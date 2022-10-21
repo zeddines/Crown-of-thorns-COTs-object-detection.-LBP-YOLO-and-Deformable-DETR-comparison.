@@ -77,19 +77,8 @@ annotate_wo_class, annotate_w_class = split_annotate_with_without_class(df)
 train_w_class, test_w_class = split_annotate_test_train(annotate_w_class)
 train_wo_class, test_wo_class = split_annotate_test_train(annotate_wo_class)
 
-print(len(df))
 #change ratio of positive and negative images for training if needed
 train_ann = train_w_class | train_wo_class
-print(len(train_w_class))
-print(len(train_wo_class))
-print(len(train_ann))
 test_ann = test_w_class | test_wo_class
-print(len(test_w_class))
-print(len(test_wo_class))
-print(len(test_ann))
 
 create_data_folders(train_ann, test_ann)
-
-
-#print(training_annotate)
-#create_training_annotation(training_data)
