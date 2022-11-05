@@ -1,0 +1,3 @@
+[submodule "Deformable-DETR-Kaggle-Starfish-Detection/Deformable-DETR"]
+	path = Deformable-DETR-Kaggle-Starfish-Detection/Deformable-DETR
+	url = https://github.com/fundamentalvision/Deformable-DETR.git
