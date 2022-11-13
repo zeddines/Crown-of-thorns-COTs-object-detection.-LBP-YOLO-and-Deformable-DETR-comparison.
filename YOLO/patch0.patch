@@ -1,0 +1,236 @@
+diff --git a/cfg/training/yolov7-cots.yaml b/cfg/training/yolov7-cots.yaml
+new file mode 100644
+index 0000000..60a2e9e
+--- /dev/null
++++ b/cfg/training/yolov7-cots.yaml
+@@ -0,0 +1,140 @@
++# parameters
++nc: 1  # number of classes
++depth_multiple: 1.0  # model depth multiple
++width_multiple: 1.0  # layer channel multiple
++
++# anchors
++anchors:
++  - [12,16, 19,36, 40,28]  # P3/8
++  - [36,75, 76,55, 72,146]  # P4/16
++  - [142,110, 192,243, 459,401]  # P5/32
++
++# yolov7 backbone
++backbone:
++  # [from, number, module, args]
++  [[-1, 1, Conv, [32, 3, 1]],  # 0
++  
++   [-1, 1, Conv, [64, 3, 2]],  # 1-P1/2      
++   [-1, 1, Conv, [64, 3, 1]],
++   
++   [-1, 1, Conv, [128, 3, 2]],  # 3-P2/4  
++   [-1, 1, Conv, [64, 1, 1]],
++   [-2, 1, Conv, [64, 1, 1]],
++   [-1, 1, Conv, [64, 3, 1]],
++   [-1, 1, Conv, [64, 3, 1]],
++   [-1, 1, Conv, [64, 3, 1]],
++   [-1, 1, Conv, [64, 3, 1]],
++   [[-1, -3, -5, -6], 1, Concat, [1]],
++   [-1, 1, Conv, [256, 1, 1]],  # 11
++         
++   [-1, 1, MP, []],
++   [-1, 1, Conv, [128, 1, 1]],
++   [-3, 1, Conv, [128, 1, 1]],
++   [-1, 1, Conv, [128, 3, 2]],
++   [[-1, -3], 1, Concat, [1]],  # 16-P3/8  
++   [-1, 1, Conv, [128, 1, 1]],
++   [-2, 1, Conv, [128, 1, 1]],
++   [-1, 1, Conv, [128, 3, 1]],
++   [-1, 1, Conv, [128, 3, 1]],
++   [-1, 1, Conv, [128, 3, 1]],
++   [-1, 1, Conv, [128, 3, 1]],
++   [[-1, -3, -5, -6], 1, Concat, [1]],
++   [-1, 1, Conv, [512, 1, 1]],  # 24
++         
++   [-1, 1, MP, []],
++   [-1, 1, Conv, [256, 1, 1]],
++   [-3, 1, Conv, [256, 1, 1]],
++   [-1, 1, Conv, [256, 3, 2]],
++   [[-1, -3], 1, Concat, [1]],  # 29-P4/16  
++   [-1, 1, Conv, [256, 1, 1]],
++   [-2, 1, Conv, [256, 1, 1]],
++   [-1, 1, Conv, [256, 3, 1]],
++   [-1, 1, Conv, [256, 3, 1]],
++   [-1, 1, Conv, [256, 3, 1]],
++   [-1, 1, Conv, [256, 3, 1]],
++   [[-1, -3, -5, -6], 1, Concat, [1]],
++   [-1, 1, Conv, [1024, 1, 1]],  # 37
++         
++   [-1, 1, MP, []],
++   [-1, 1, Conv, [512, 1, 1]],
++   [-3, 1, Conv, [512, 1, 1]],
++   [-1, 1, Conv, [512, 3, 2]],
++   [[-1, -3], 1, Concat, [1]],  # 42-P5/32  
++   [-1, 1, Conv, [256, 1, 1]],
++   [-2, 1, Conv, [256, 1, 1]],
++   [-1, 1, Conv, [256, 3, 1]],
++   [-1, 1, Conv, [256, 3, 1]],
++   [-1, 1, Conv, [256, 3, 1]],
++   [-1, 1, Conv, [256, 3, 1]],
++   [[-1, -3, -5, -6], 1, Concat, [1]],
++   [-1, 1, Conv, [1024, 1, 1]],  # 50
++  ]
++
++# yolov7 head
++head:
++  [[-1, 1, SPPCSPC, [512]], # 51
++  
++   [-1, 1, Conv, [256, 1, 1]],
++   [-1, 1, nn.Upsample, [None, 2, 'nearest']],
++   [37, 1, Conv, [256, 1, 1]], # route backbone P4
++   [[-1, -2], 1, Concat, [1]],
++   
++   [-1, 1, Conv, [256, 1, 1]],
++   [-2, 1, Conv, [256, 1, 1]],
++   [-1, 1, Conv, [128, 3, 1]],
++   [-1, 1, Conv, [128, 3, 1]],
++   [-1, 1, Conv, [128, 3, 1]],
++   [-1, 1, Conv, [128, 3, 1]],
++   [[-1, -2, -3, -4, -5, -6], 1, Concat, [1]],
++   [-1, 1, Conv, [256, 1, 1]], # 63
++   
++   [-1, 1, Conv, [128, 1, 1]],
++   [-1, 1, nn.Upsample, [None, 2, 'nearest']],
++   [24, 1, Conv, [128, 1, 1]], # route backbone P3
++   [[-1, -2], 1, Concat, [1]],
++   
++   [-1, 1, Conv, [128, 1, 1]],
++   [-2, 1, Conv, [128, 1, 1]],
++   [-1, 1, Conv, [64, 3, 1]],
++   [-1, 1, Conv, [64, 3, 1]],
++   [-1, 1, Conv, [64, 3, 1]],
++   [-1, 1, Conv, [64, 3, 1]],
++   [[-1, -2, -3, -4, -5, -6], 1, Concat, [1]],
++   [-1, 1, Conv, [128, 1, 1]], # 75
++      
++   [-1, 1, MP, []],
++   [-1, 1, Conv, [128, 1, 1]],
++   [-3, 1, Conv, [128, 1, 1]],
++   [-1, 1, Conv, [128, 3, 2]],
++   [[-1, -3, 63], 1, Concat, [1]],
++   
++   [-1, 1, Conv, [256, 1, 1]],
++   [-2, 1, Conv, [256, 1, 1]],
++   [-1, 1, Conv, [128, 3, 1]],
++   [-1, 1, Conv, [128, 3, 1]],
++   [-1, 1, Conv, [128, 3, 1]],
++   [-1, 1, Conv, [128, 3, 1]],
++   [[-1, -2, -3, -4, -5, -6], 1, Concat, [1]],
++   [-1, 1, Conv, [256, 1, 1]], # 88
++      
++   [-1, 1, MP, []],
++   [-1, 1, Conv, [256, 1, 1]],
++   [-3, 1, Conv, [256, 1, 1]],
++   [-1, 1, Conv, [256, 3, 2]],
++   [[-1, -3, 51], 1, Concat, [1]],
++   
++   [-1, 1, Conv, [512, 1, 1]],
++   [-2, 1, Conv, [512, 1, 1]],
++   [-1, 1, Conv, [256, 3, 1]],
++   [-1, 1, Conv, [256, 3, 1]],
++   [-1, 1, Conv, [256, 3, 1]],
++   [-1, 1, Conv, [256, 3, 1]],
++   [[-1, -2, -3, -4, -5, -6], 1, Concat, [1]],
++   [-1, 1, Conv, [512, 1, 1]], # 101
++   
++   [75, 1, RepConv, [256, 3, 1]],
++   [88, 1, RepConv, [512, 3, 1]],
++   [101, 1, RepConv, [1024, 3, 1]],
++
++   [[102,103,104], 1, IDetect, [nc, anchors]],   # Detect(P3, P4, P5)
++  ]
+diff --git a/data/cots.yaml b/data/cots.yaml
+new file mode 100644
+index 0000000..e9548d3
+--- /dev/null
++++ b/data/cots.yaml
+@@ -0,0 +1,15 @@
++# COCO 2017 dataset http://cocodataset.org
++
++# download command/URL (optional)
++#download: bash ./scripts/get_coco.sh
++
++# train and val data as 1) directory: path/images/, 2) file: path/images.txt, or 3) list: [path1/images/, path2/images/]
++train: ./yolov7/data/train/
++val: ./yolov7/data/val/
++test: ./yolov7/data/val/ 
++
++# number of classes
++nc: 1
++
++# class names
++names: [ 'crown of thorns' ]
+diff --git a/data/hyp.scratch.cots.yaml b/data/hyp.scratch.cots.yaml
+new file mode 100644
+index 0000000..86c7bca
+--- /dev/null
++++ b/data/hyp.scratch.cots.yaml
+@@ -0,0 +1,31 @@
++lr0: 0.01  # initial learning rate (SGD=1E-2, Adam=1E-3)
++lrf: 0.1  # final OneCycleLR learning rate (lr0 * lrf)
++momentum: 0.937  # SGD momentum/Adam beta1
++weight_decay: 0.0005  # optimizer weight decay 5e-4
++warmup_epochs: 3.0  # warmup epochs (fractions ok)
++warmup_momentum: 0.8  # warmup initial momentum
++warmup_bias_lr: 0.1  # warmup initial bias lr
++box: 0.05  # box loss gain
++cls: 0.3  # cls loss gain
++cls_pw: 1.0  # cls BCELoss positive_weight
++obj: 0.7  # obj loss gain (scale with pixels)
++obj_pw: 1.0  # obj BCELoss positive_weight
++iou_t: 0.20  # IoU training threshold
++anchor_t: 4.0  # anchor-multiple threshold
++# anchors: 3  # anchors per output layer (0 to ignore)
++fl_gamma: 0.0  # focal loss gamma (efficientDet default gamma=1.5)
++hsv_h: 0.015  # image HSV-Hue augmentation (fraction)
++hsv_s: 0.7  # image HSV-Saturation augmentation (fraction)
++hsv_v: 0.4  # image HSV-Value augmentation (fraction)
++degrees: 0.0  # image rotation (+/- deg)
++translate: 0.2  # image translation (+/- fraction)
++scale: 0.5  # image scale (+/- gain)
++shear: 0.0  # image shear (+/- deg)
++perspective: 0.0  # image perspective (+/- fraction), range 0-0.001
++flipud: 0.0  # image flip up-down (probability)
++fliplr: 0.0  # image flip left-right (probability)
++mosaic: 1.0  # image mosaic (probability)
++mixup: 0.0  # image mixup (probability)
++copy_paste: 0.0  # image copy paste (probability)
++paste_in: 0.0  # image copy paste (probability), use 0 for faster training
++loss_ota: 1 # use ComputeLossOTA, use 0 for faster training
+\ No newline at end of file
+diff --git a/utils/loss.py b/utils/loss.py
+index bf7ab65..96a6401 100644
+--- a/utils/loss.py
++++ b/utils/loss.py
+@@ -636,7 +636,7 @@ class ComputeLossOTA:
+         return loss * bs, torch.cat((lbox, lobj, lcls, loss)).detach()
+ 
+     def build_targets(self, p, targets, imgs):
+-        
++        device = targets.device 
+         #indices, anch = self.find_positive(p, targets)
+         indices, anch = self.find_3_positive(p, targets)
+         #indices, anch = self.find_4_positive(p, targets)
+@@ -682,7 +682,8 @@ class ComputeLossOTA:
+                 all_gj.append(gj)
+                 all_gi.append(gi)
+                 all_anch.append(anch[i][idx])
+-                from_which_layer.append(torch.ones(size=(len(b),)) * i)
++                #from_which_layer.append(torch.ones(size=(len(b),)) * i)
++                from_which_layer.append((torch.ones(size=(len(b),)) * i).to(torch.device(device)))
+                 
+                 fg_pred = pi[b, a, gj, gi]                
+                 p_obj.append(fg_pred[:, 4:5])
+@@ -754,6 +755,7 @@ class ComputeLossOTA:
+                 matching_matrix[:, anchor_matching_gt > 1] *= 0.0
+                 matching_matrix[cost_argmin, anchor_matching_gt > 1] = 1.0
+             fg_mask_inboxes = matching_matrix.sum(0) > 0.0
++            fg_mask_inboxes = fg_mask_inboxes.to(torch.device(device))
+             matched_gt_inds = matching_matrix[:, fg_mask_inboxes].argmax(0)
+         
+             from_which_layer = from_which_layer[fg_mask_inboxes]
