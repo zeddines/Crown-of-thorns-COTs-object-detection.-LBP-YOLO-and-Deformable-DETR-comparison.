@@ -1,5 +1,4 @@
 #!/usr/bin/bash
-
 git clone https://github.com/WongKinYiu/yolov7.git
 #dos2unix patch0.patch
 #unix2dos patch0.patch
