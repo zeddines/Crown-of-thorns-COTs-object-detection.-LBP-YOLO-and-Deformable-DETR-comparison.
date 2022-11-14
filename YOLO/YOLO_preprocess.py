@@ -5,6 +5,7 @@ import os
 from sklearn.model_selection import train_test_split
 import shutil
 import argparse
+import pathlib
 
 #params
 train_folder = os.path.join("yolov7", "data", "train")
@@ -75,9 +76,9 @@ def create_data_folders(train_ann, test_ann, train_folder, test_folder):
     create_img_folder(test_ann, test_folder)
 
 parser = argparse.ArgumentParser()
-parser.add_argument("gbr_p")
-parser.add_argument("detr_p")
-args = parser.parse_args
+parser.add_argument("--gbr_p", type = pathlib.Path)
+parser.add_argument("--detr_p", type = pathlib.Path)
+args = parser.parse_args()
 
 #gbr_path = os.path.join("files", "tensorflow-great-barrier-reef")
 #detr_data_path = os.path.join("files", "data_new")
